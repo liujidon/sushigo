@@ -1,11 +1,12 @@
 package cards;
 
 public class Card {
-	String name = "";
+	public String name = "";
+	public float value = 0;
 
 	@Override
 	public String toString() {
-		return "[" + name + "]";
+		return String.format("[%s,%.1f]", name, value);
 	}
 	
 }
