@@ -10,7 +10,12 @@ public class SimpleEngine extends Engine {
 
 	@Override
 	public Card bestCardToEat(List<Card> hand) {
-        return hand.get(randomGenerator.nextInt(hand.size()));
+        return hand.size() != 0 ? hand.get(randomGenerator.nextInt(hand.size())) : null;
+	}
+
+	@Override
+	public Card bestCardToEat(List<Card> hand, List<Card> eaten) {
+		return bestCardToEat(hand);
 	}
 
 }

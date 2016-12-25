@@ -24,21 +24,53 @@ public class SushiGo {
 		mode.add(new Wasabi());
 		mode.add(new Chopsticks());
 		mode.add(new Dumpling());
-		//mode.add(new Pudding());
+		mode.add(new Pudding());
 		
 		Board board = new Board(3, mode);
-		board.takeTurn();
-		board.takeTurn();
-		board.takeTurn();
-		board.takeTurn();
-		board.takeTurn();
-		board.takeTurn();
-		board.takeTurn();
-		board.takeTurn();
-		//board.printPlayerHand();
 		
+		board.selectPlayer(0);
+        
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
 		board.computeScores();
 		board.printPlayerEaten();
+		board.newRound();
+		
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.computeScores();
+		board.printPlayerEaten();
+		board.newRound();
+		
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.takeTurn();
+		board.computeScores();
+		board.printPlayerEaten();
+
 		//board.printPlayers();
 	}
 }

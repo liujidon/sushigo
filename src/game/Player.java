@@ -2,6 +2,7 @@ package game;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import cards.Card;
@@ -30,8 +31,24 @@ public class Player implements Comparable<Player> {
 		this.name = name;
 	}
 	
+	public void newRound() {
+		hand.clear();
+		for (Iterator<Card> iterator = eaten.iterator(); iterator.hasNext(); ) {
+			Card c = iterator.next();
+			if(c instanceof Pudding == false)
+				iterator.remove();
+		}
+		makiCount = 0;
+		makiRank = 0;
+		tempuraCount = 0;
+		sashimiCount = 0;
+		dumplingCount = 0;
+	}
+	
 	public void makeMove() {
-		Card cardEaten = engine.bestCardToEat(hand);
+		Card cardEaten = engine.bestCardToEat(hand, eaten);
+		if(cardEaten == null)
+			return;
 		eaten.add(cardEaten);
 		hand.remove(cardEaten);
 		if(cardEaten instanceof Maki)
@@ -55,7 +72,7 @@ public class Player implements Comparable<Player> {
 	}
 	
 	public void printEaten() {
-		System.out.print(String.format("%s eaten (%d) %d: ", name, score, puddingRank));
+		System.out.print(String.format("%s Score:(%d), puddingRank=%d, makiRank=%d: ", name, score, puddingRank, makiRank));
 		for(Card c : eaten)
 			System.out.print(c + " ");
 		

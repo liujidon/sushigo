@@ -2,6 +2,7 @@ package game;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -15,13 +16,14 @@ import cards.Pudding;
 import cards.Sashimi;
 import cards.Tempura;
 import cards.Wasabi;
+import engine.Human;
 
 public class Board {
 
 	LinkedList<Card> deck = new LinkedList<Card>();
-	List<Card> round1cards = new ArrayList<Card>();
-	List<Card> round2cards = new ArrayList<Card>();
-	List<Card> round3cards = new ArrayList<Card>();
+	LinkedList<Card> round1Deck = new LinkedList<Card>();
+	LinkedList<Card> round2Deck = new LinkedList<Card>();
+	LinkedList<Card> round3Deck = new LinkedList<Card>();
 	
 	List<Player> players = new ArrayList<Player>();
 	private static final int SALMON_NIGIRI_COUNT = 10;
@@ -40,6 +42,8 @@ public class Board {
 	private static final int CHOPSTICKS_COUNT = 4;
 	
 	public int playerCount = 0;
+	public int currentRound = 0;
+	public int cardsPerPlayer = 9;
 	
 	public Board(int playerNumber, List<Card> mode) {
 		if(playerNumber < 2) {
@@ -64,11 +68,17 @@ public class Board {
 		dealCards();
 	}
 	
+	public Player selectPlayer(int playerNumber) {
+		Player human = players.get(playerNumber);
+		human.engine = new Human();
+		System.out.println("You are " + human.name);
+		return human;
+	}
+	
 	public void takeTurn() {
 		for(Player player : players)
 			player.makeMove();
 		if(players.get(0).hand.isEmpty()) {
-			computeScores();
 			return;
 		}
 		//pass on the cards
@@ -79,12 +89,27 @@ public class Board {
 		players.get(players.size()-1).hand = tempHand;
 	}
 	
-	public void startNewRound() {
-		
+	public void newRound() {
+		currentRound++;
+		System.out.println("Round " + currentRound);
+		LinkedList<Card> currentDeck = null;
+		if(currentRound == 1)
+			currentDeck = round1Deck;
+		else if(currentRound == 2)
+			currentDeck = round2Deck;
+		else if(currentRound == 3)
+			currentDeck = round3Deck;
+		else
+			return;
+		for(Player p : players) {
+			p.newRound();
+			for(int i = 0; i < cardsPerPlayer; i++) {
+				p.hand.add(currentDeck.pop());
+			}
+		}
 	}
 	
 	public void computeScores() {
-		
 		for(Player p : players) {
 			//wasabi
 			Nigiri lastNigiri = null;
@@ -120,6 +145,7 @@ public class Board {
 		for(Player p : players) {
 			if(p.makiCount != lastMakiCount)
 				makiRank++;
+			lastMakiCount = p.makiCount;
 			p.makiRank = makiRank;
 			if(makiRank == 1)
 				firstPlaceCount++;
@@ -148,6 +174,7 @@ public class Board {
 		for(Player p : players) {
 			if(p.puddingCount != lastPuddingCount)
 				puddingRank++;
+			lastPuddingCount = p.puddingCount;
 			p.puddingRank = puddingRank;
 			if(puddingRank == 1)
 				firstPlaceCount++;
@@ -173,14 +200,13 @@ public class Board {
 		}
 		//add up scores
 		for(Player p : players) {
+			for(Card c : p.eaten) {
+				if(c instanceof Pudding == false || currentRound == 3)
+					p.score += c.value;
+			}
 			//account for no pudding card
 			if(p.puddingCount == 0)
-				p.score = Pudding.LAST_PLACE_SCORE/lastPlaceCount;
-			else
-				p.score = 0;
-			
-			for(Card c : p.eaten)
-				p.score += c.value;
+				p.score -= Pudding.LAST_PLACE_SCORE/lastPlaceCount;
 		}
 	}
 	
@@ -214,12 +240,19 @@ public class Board {
 	
 	private void dealCards() {
 		System.out.println("Dealing cards...");
-		int cardsPerPlayer = 9;
-		for(Player p : players) {
-			for(int i = 0; i < cardsPerPlayer; i++) {
-				p.hand.add(deck.pop());
-			}
-		}	
+		int cardDistributed = 0;
+		for (Iterator<Card> iterator = deck.iterator(); iterator.hasNext(); ) {
+			if(cardDistributed < cardsPerPlayer * playerCount)
+				round1Deck.add(deck.pop());
+			else if(cardDistributed < 2 * cardsPerPlayer * playerCount)
+				round2Deck.add(deck.pop());
+			else if(cardDistributed < 3 * cardsPerPlayer * playerCount)
+				round3Deck.add(deck.pop());
+			else
+				break;
+			cardDistributed++;
+		}
+		newRound();
 	}
 	
 	private void shuffleDeck(List<Card> cards) {
