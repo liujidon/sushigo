@@ -19,4 +19,5 @@ public class Nigiri extends Card{
 		}
 		this.value = points;
 	}
+	
 }

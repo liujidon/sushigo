@@ -26,12 +26,11 @@ public class SushiGo {
 		mode.add(new Dumpling());
 		mode.add(new Pudding());
 		
-		Board board = new Board(3, mode);
+		Board board = new Board(5, mode);
 		
 		board.selectHumanPlayer(0);
 		board.selectProbEnginePlayer(2);
 		
-		board.takeTurn();
 		board.takeTurn();
 		board.takeTurn();
 		board.takeTurn();
