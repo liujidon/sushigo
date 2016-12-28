@@ -17,6 +17,7 @@ import cards.Sashimi;
 import cards.Tempura;
 import cards.Wasabi;
 import engine.Human;
+import engine.ProbabilisticEngine;
 
 public class Board {
 
@@ -26,20 +27,6 @@ public class Board {
 	LinkedList<Card> round3Deck = new LinkedList<Card>();
 	
 	List<Player> players = new ArrayList<Player>();
-	private static final int SALMON_NIGIRI_COUNT = 10;
-	private static final int SQUID_NIGIRI_COUNT = 5;
-	private static final int EGG_NIGIRI_COUNT = 5;
-	
-	private static final int MAKI_ROLL_1_COUNT = 6;
-	private static final int MAKI_ROLL_2_COUNT = 12;
-	private static final int MAKI_ROLL_3_COUNT = 8;
-	
-	private static final int TEMPURA_COUNT = 14;
-	private static final int SASHIMI_COUNT = 14;
-	private static final int DUMPLING_COUNT = 14;
-	private static final int PUDDING_COUNT = 10;
-	private static final int WASABI_COUNT = 6;
-	private static final int CHOPSTICKS_COUNT = 4;
 	
 	public int playerCount = 0;
 	public int currentRound = 0;
@@ -51,6 +38,7 @@ public class Board {
 			return;
 		}
 		this.playerCount = playerNumber;
+		this.cardsPerPlayer = Constants.getCardsPerPlayer(playerNumber);
 		for(int i = 1; i <= playerNumber; i++) {
 			Player newPlayer = new Player("Player " + i); 
 			if(i > 1) {
@@ -68,13 +56,27 @@ public class Board {
 		dealCards();
 	}
 	
-	public Player selectPlayer(int playerNumber) {
+	public Player selectHumanPlayer(int playerNumber) {
 		Player human = players.get(playerNumber);
 		human.engine = new Human();
+		human.name = "Human Player";
 		System.out.println("You are " + human.name);
 		return human;
 	}
 	
+	public Player selectProbEnginePlayer(int playerNumber) {
+		if(playerNumber >= players.size())
+			return null;
+		Player probPlayer = players.get(playerNumber);
+		List<Player> opp = new ArrayList<Player>();
+		for(int i = 0; i < players.size(); i++) {
+			if(i != playerNumber)
+				opp.add(players.get(i));
+		}
+		probPlayer.engine = new ProbabilisticEngine(opp);
+		probPlayer.name = probPlayer.engine.getClass().getSimpleName();
+		return probPlayer;
+	}
 	public void takeTurn() {
 		for(Player player : players)
 			player.makeMove();
@@ -162,7 +164,7 @@ public class Board {
 				makiScore = Maki.SECOND_PLACE_SCORE/secondPlaceCount;
 			for(Card c : p.eaten) {
 				if(c instanceof Maki)
-					c.value = makiScore * ((Maki) c).weight/p.makiCount;
+					c.value = makiScore * ((Maki) c).weight/(float)p.makiCount;
 			}
 		}
 		
@@ -195,7 +197,7 @@ public class Board {
 				continue;
 			for(Card c : p.eaten) {
 				if(c instanceof Pudding)
-					c.value = puddingScore / p.puddingCount;
+					c.value = puddingScore / (float) p.puddingCount;
 			}
 		}
 		//add up scores
@@ -265,43 +267,43 @@ public class Board {
 		System.out.println("Creating deck...");
 		for(Card card : mode) {
 			if(card instanceof Nigiri) {
-				for(int i = 0; i < EGG_NIGIRI_COUNT; i++)
+				for(int i = 0; i < Constants.EGG_NIGIRI_COUNT; i++)
 					deck.add(new Nigiri(1));
-				for(int i = 0; i < SALMON_NIGIRI_COUNT; i++)
+				for(int i = 0; i < Constants.SALMON_NIGIRI_COUNT; i++)
 					deck.add(new Nigiri(2));
-				for(int i = 0; i < SQUID_NIGIRI_COUNT; i++)
+				for(int i = 0; i < Constants.SQUID_NIGIRI_COUNT; i++)
 					deck.add(new Nigiri(3));
 			}
 			if(card instanceof Maki) {
-				for(int i = 0; i < MAKI_ROLL_1_COUNT; i++)
+				for(int i = 0; i < Constants.MAKI_ROLL_1_COUNT; i++)
 					deck.add(new Maki(1));
-				for(int i = 0; i < MAKI_ROLL_2_COUNT; i++)
+				for(int i = 0; i < Constants.MAKI_ROLL_2_COUNT; i++)
 					deck.add(new Maki(2));
-				for(int i = 0; i < MAKI_ROLL_3_COUNT; i++)
+				for(int i = 0; i < Constants.MAKI_ROLL_3_COUNT; i++)
 					deck.add(new Maki(3));
 			}
 			if(card instanceof Tempura) {
-				for(int i = 0; i < TEMPURA_COUNT; i++)
+				for(int i = 0; i < Constants.TEMPURA_COUNT; i++)
 					deck.add(new Tempura());
 			}
 			if(card instanceof Sashimi) {
-				for(int i = 0; i < SASHIMI_COUNT; i++)
+				for(int i = 0; i < Constants.SASHIMI_COUNT; i++)
 					deck.add(new Sashimi());
 			}
 			if(card instanceof Dumpling) {
-				for(int i = 0; i < DUMPLING_COUNT; i++)
+				for(int i = 0; i < Constants.DUMPLING_COUNT; i++)
 					deck.add(new Dumpling());
 			}
 			if(card instanceof Chopsticks) {
-				for(int i = 0; i < CHOPSTICKS_COUNT; i++)
+				for(int i = 0; i < Constants.CHOPSTICKS_COUNT; i++)
 					deck.add(new Chopsticks());
 			}
 			if(card instanceof Wasabi) {
-				for(int i = 0; i < WASABI_COUNT; i++)
+				for(int i = 0; i < Constants.WASABI_COUNT; i++)
 					deck.add(new Wasabi());
 			}
 			if(card instanceof Pudding) {
-				for(int i = 0; i < PUDDING_COUNT; i++)
+				for(int i = 0; i < Constants.PUDDING_COUNT; i++)
 					deck.add(new Pudding());
 			}
 		}

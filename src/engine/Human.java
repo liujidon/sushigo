@@ -1,46 +1,84 @@
 package engine;
 
+import game.Player;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
 import cards.Card;
 
 public class Human extends Engine{
-	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	public Human(List<Player> opponents) {
+		super(opponents);
+	}
 
-	@Override
-	public Card bestCardToEat(List<Card> hand, List<Card> eaten) {
-		if(hand.size() == 0)
-			return null;
+	public Human() {}
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	final String operatingSystem = System.getProperty("os.name");
+
+	private void clearConsole() {
+//		if (operatingSystem.contains("Windows")) {
+//		    try {
+//				Runtime.getRuntime().exec("cls");
+//			} catch (IOException e) {
+//				for(int i=0; i<1000; i++) System.out.println();
+//			}
+//		}
+//		else {
+//			for(int i=0; i<1000; i++) System.out.println();
+//		}
+	}
+	
+	private void printHand(List<Card> hand) {
+		System.out.print("Hand: ");
 		for(int i = 1; i <= hand.size(); i++) {
 			System.out.print(i + " " + hand.get(i-1) + ", ");
 		}
 		System.out.println();
+	}
+	
+	private void printEaten(List<Card> eaten) {
+		System.out.print("Eaten: ");
+		for(Card e : eaten)
+			System.out.print(e + " ");
+		System.out.println();
+	}
+	
+	@Override
+	public Card bestCardToEat(List<Card> hand, List<Card> eaten) {
+		if(hand.size() == 0)
+			return null;
+		printHand(hand);
+		printEaten(eaten);
 		String response = "?";
-	    while(response.equals("?") || !isValidResponse(response, hand)) {
+	    while(isHelpCommand(response) || !isValidResponse(response, hand)) {
 	    	System.out.print("Pick a card or (?) to show eaten: ");
 	    	try {
 	    		response = br.readLine();
 	    		if(response.equals("?")) {
-	    			System.out.print("Eaten: ");
-	    			for(Card e : eaten)
-	    				System.out.print(e + " ");
-	    			System.out.println();
+	    			printEaten(eaten);
+	    		} else if(response.equals("h")) {
+	    			printHand(hand);
 	    		}
-	    			
 	    	} catch(Exception e) {
 				System.out.print("Invalid entry, must be a number or ?");
 	    	}
 	    }
 	    
 	    try {
+			clearConsole();
 	    	int cardSelected = Integer.parseInt(response) -1;
 	    	return hand.get(cardSelected);
 		} catch (Exception e) {
 			System.out.print("Can't find card to eat!");
 		}
 		return null;
+	}
+	
+	private boolean isHelpCommand(String response) {
+		return response.isEmpty() || response.equals("?") || response.equals("h");
 	}
 	
 	private boolean isValidResponse(String response, List<Card> hand) {
@@ -59,6 +97,24 @@ public class Human extends Engine{
 	@Override
 	public Card bestCardToEat(List<Card> hand) {
 		return null;
+	}
+
+	@Override
+	public boolean useChopstick(List<Card> hand, List<Card> eaten) {
+		String response = "?";
+		printHand(hand);
+		printEaten(eaten);
+	    System.out.print("(y) to use chopstick, (return) to save for later: ");
+	    try {
+	    	response = br.readLine();
+	    	if(response.equalsIgnoreCase("y"))
+	    		return true;
+	    	else
+	    		return false;
+	    } catch (Exception e) {
+			System.out.print("Invalid entry... not using chopsticks");
+	    }
+		return false;
 	}
 
 }

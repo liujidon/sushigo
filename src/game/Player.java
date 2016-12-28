@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cards.Card;
+import cards.Chopsticks;
 import cards.Dumpling;
 import cards.Maki;
 import cards.Pudding;
@@ -21,7 +22,7 @@ public class Player implements Comparable<Player> {
 	public List<Card> eaten = new ArrayList<Card>();
 	public Player leftPlayer;
 	public Player rightPlayer;
-	public Engine engine = new SimpleEngine();
+	public Engine engine;
 	public int score = 0;
 	public int makiCount = 0, makiRank = 0;
 	public int puddingCount = 0, puddingRank = 0;
@@ -29,6 +30,7 @@ public class Player implements Comparable<Player> {
 	
 	public Player(String name) {
 		this.name = name;
+		this.engine = new SimpleEngine();
 	}
 	
 	public void newRound() {
@@ -46,11 +48,31 @@ public class Player implements Comparable<Player> {
 	}
 	
 	public void makeMove() {
+		int chopstickIndex = hasEatenChopstick();
+		Card chopstickUsed = null;
+		if(chopstickIndex > -1 && engine.useChopstick(hand, eaten)) {
+			chopstickUsed = eaten.get(chopstickIndex);
+			eaten.remove(chopstickUsed);
+			Card cardEatenChopstick = engine.bestCardToEat(hand, eaten);
+			if(cardEatenChopstick != null) {
+				processNewEaten(cardEatenChopstick);
+				hand.remove(cardEatenChopstick);
+				eaten.add(cardEatenChopstick);
+			}
+		}
+		
 		Card cardEaten = engine.bestCardToEat(hand, eaten);
-		if(cardEaten == null)
-			return;
-		eaten.add(cardEaten);
-		hand.remove(cardEaten);
+		if(cardEaten != null) {
+			processNewEaten(cardEaten);
+			hand.remove(cardEaten);
+			eaten.add(cardEaten);
+		}
+		
+		if(chopstickUsed != null)
+			hand.add(chopstickUsed);
+	}
+	
+	private void processNewEaten(Card cardEaten) {
 		if(cardEaten instanceof Maki)
 			makiCount += ((Maki) cardEaten).weight;
 		else if(cardEaten instanceof Pudding)
@@ -76,6 +98,14 @@ public class Player implements Comparable<Player> {
 		for(Card c : eaten)
 			System.out.print(c + " ");
 		
+	}
+	
+	private int hasEatenChopstick() {
+		for(int i = 0; i < eaten.size(); i++) {
+			if(eaten.get(i) instanceof Chopsticks)
+				return i;
+		}
+		return -1;
 	}
 
 	@Override
