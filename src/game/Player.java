@@ -16,19 +16,23 @@ import engine.Engine;
 import engine.SimpleEngine;
 
 public class Player implements Comparable<Player> {
-
-	String name;
+	public static int count = 0;
+	
+	public int number;
+	public String name;
 	public List<Card> hand = new ArrayList<Card>();
 	public List<Card> eaten = new ArrayList<Card>();
 	public Player leftPlayer;
 	public Player rightPlayer;
 	public Engine engine;
-	public int score = 0;
+	public double score = 0;
 	public int makiCount = 0, makiRank = 0;
 	public int puddingCount = 0, puddingRank = 0;
 	public int tempuraCount = 0, sashimiCount = 0, dumplingCount = 0;
 	
 	public Player(String name) {
+		Player.count++;
+		number = Player.count;
 		this.name = name;
 		this.engine = new SimpleEngine();
 	}
@@ -94,9 +98,9 @@ public class Player implements Comparable<Player> {
 	}
 	
 	public void printEaten() {
-		System.out.print(String.format("%s Score:(%d), puddingRank=%d, makiRank=%d: ", name, score, puddingRank, makiRank));
+		System.out.print(String.format("%s Score:(%d), puddingRank=%d, makiRank=%d: ", name, Math.round(score), puddingRank, makiRank));
 		for(Card c : eaten)
-			System.out.print(c + " ");
+			System.out.print(c.toStringDetail() + " ");
 		
 	}
 	
@@ -121,13 +125,19 @@ public class Player implements Comparable<Player> {
 	public static final Comparator<Player> SCORE_COMPARE = new Comparator<Player>() {
 		@Override
 		public int compare(Player p1, Player p2) {
-			return p2.score - p1.score;
+			return Double.compare(p2.score, p1.score);
 		}
 	};
 	public static final Comparator<Player> PUDDING_COMPARE = new Comparator<Player>() {
 		@Override
 		public int compare(Player p1, Player p2) {
 			return p2.puddingCount - p1.puddingCount;
+		}
+	};
+	public static final Comparator<Player> TURN_COMPARE = new Comparator<Player>() {
+		@Override
+		public int compare(Player p1, Player p2) {
+			return p1.number - p2.number;
 		}
 	};
 

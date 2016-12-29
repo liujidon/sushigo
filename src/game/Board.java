@@ -57,8 +57,15 @@ public class Board {
 	}
 	
 	public Player selectHumanPlayer(int playerNumber) {
+		if(playerNumber >= players.size())
+			return null;
 		Player human = players.get(playerNumber);
-		human.engine = new Human();
+		List<Player> opp = new ArrayList<Player>();
+		for(int i = 0; i < players.size(); i++) {
+			if(i != playerNumber)
+				opp.add(players.get(i));
+		}
+		human.engine = new Human(opp);
 		human.name = "Human Player";
 		System.out.println("You are " + human.name);
 		return human;
@@ -85,10 +92,9 @@ public class Board {
 		}
 		//pass on the cards
 		List<Card> tempHand = players.get(0).hand;
-		for(int i = 0; i < players.size() - 1; i++) {
-			players.get(i).hand = players.get(i).rightPlayer.hand;
-		}
-		players.get(players.size()-1).hand = tempHand;
+		String tempName = players.get(0).leftPlayer.name;
+		for(Player p : players)
+			p.hand = p.name.equals(tempName) ? tempHand : p.rightPlayer.hand;
 	}
 	
 	public void newRound() {
@@ -103,6 +109,7 @@ public class Board {
 			currentDeck = round3Deck;
 		else
 			return;
+		Collections.sort(players, Player.TURN_COMPARE);
 		for(Player p : players) {
 			p.newRound();
 			for(int i = 0; i < cardsPerPlayer; i++) {
@@ -194,10 +201,11 @@ public class Board {
 			else if(p.puddingRank == lastPlaceRank)
 				puddingScore = Pudding.LAST_PLACE_SCORE/lastPlaceCount;
 			else
-				continue;
+				puddingScore = 0;
+			
 			for(Card c : p.eaten) {
 				if(c instanceof Pudding)
-					c.value = puddingScore / (float) p.puddingCount;
+					c.value = (puddingScore == 0 || p.puddingCount == 0) ? 0 : puddingScore / (float) p.puddingCount;
 			}
 		}
 		//add up scores
@@ -207,8 +215,8 @@ public class Board {
 					p.score += c.value;
 			}
 			//account for no pudding card
-			if(p.puddingCount == 0)
-				p.score -= Pudding.LAST_PLACE_SCORE/lastPlaceCount;
+			if(currentRound == 3 && p.puddingCount == 0)
+				p.score += Pudding.LAST_PLACE_SCORE/lastPlaceCount;
 		}
 	}
 	
@@ -219,7 +227,6 @@ public class Board {
 	}
 	
 	public void printPlayers() {
-		Collections.sort(players, Player.SCORE_COMPARE);
 		for(Player p : players) {
 			System.out.println(p);
 		}

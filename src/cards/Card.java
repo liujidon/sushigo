@@ -7,6 +7,10 @@ public class Card {
 	
 	@Override
 	public String toString() {
+		return String.format("[%s]", name);
+	}
+	
+	public String toStringDetail() {
 		return String.format("[%s,%.1f]", name, value);
 	}
 

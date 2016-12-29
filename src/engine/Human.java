@@ -19,30 +19,39 @@ public class Human extends Engine{
 	final String operatingSystem = System.getProperty("os.name");
 
 	private void clearConsole() {
-//		if (operatingSystem.contains("Windows")) {
-//		    try {
-//				Runtime.getRuntime().exec("cls");
-//			} catch (IOException e) {
-//				for(int i=0; i<1000; i++) System.out.println();
-//			}
-//		}
-//		else {
-//			for(int i=0; i<1000; i++) System.out.println();
-//		}
+		if (operatingSystem.contains("Windows")) {
+		    try {
+				Runtime.getRuntime().exec("cls");
+			} catch (IOException e) {
+				for(int i=0; i<1000; i++) System.out.println();
+			}
+		}
+		else {
+			for(int i=0; i<1000; i++) System.out.println();
+		}
 	}
 	
 	private void printHand(List<Card> hand) {
-		System.out.print("Hand: ");
+		System.out.print("Your Hand: ");
 		for(int i = 1; i <= hand.size(); i++) {
-			System.out.print(i + " " + hand.get(i-1) + ", ");
+			System.out.print(i + "->" + hand.get(i-1) + " ");
 		}
 		System.out.println();
 	}
 	
 	private void printEaten(List<Card> eaten) {
-		System.out.print("Eaten: ");
+		for(Player opp : opponents) {
+			System.out.print(opp.name + " Eaten:");
+			for(Card e : opp.eaten)
+				System.out.print(e + " ");
+			System.out.println();
+		}
+		
+		System.out.print("You Eaten: ");
 		for(Card e : eaten)
 			System.out.print(e + " ");
+		System.out.println();
+		System.out.println();
 		System.out.println();
 	}
 	
@@ -50,11 +59,11 @@ public class Human extends Engine{
 	public Card bestCardToEat(List<Card> hand, List<Card> eaten) {
 		if(hand.size() == 0)
 			return null;
-		printHand(hand);
 		printEaten(eaten);
+		printHand(hand);
 		String response = "?";
 	    while(isHelpCommand(response) || !isValidResponse(response, hand)) {
-	    	System.out.print("Pick a card or (?) to show eaten: ");
+	    	System.out.print("Pick a card number or (?) to show eaten: ");
 	    	try {
 	    		response = br.readLine();
 	    		if(response.equals("?")) {
@@ -102,8 +111,8 @@ public class Human extends Engine{
 	@Override
 	public boolean useChopstick(List<Card> hand, List<Card> eaten) {
 		String response = "?";
-		printHand(hand);
 		printEaten(eaten);
+		printHand(hand);
 	    System.out.print("(y) to use chopstick, (return) to save for later: ");
 	    try {
 	    	response = br.readLine();
