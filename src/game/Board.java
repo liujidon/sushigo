@@ -218,6 +218,20 @@ public class Board {
 			if(currentRound == 3 && p.puddingCount == 0)
 				p.score += Pudding.LAST_PLACE_SCORE/lastPlaceCount;
 		}
+		if(currentRound == 3) {
+			Player.count = 0;
+		}
+	}
+	
+	public int getRank(int playerNumber) {
+		Collections.sort(players, Player.SCORE_COMPARE);
+		int rank = 1;
+		for(Player p : players) {
+			if(p.number == playerNumber)
+				return rank;
+			rank++;
+		}
+		return rank;
 	}
 	
 	public void printDeck() {

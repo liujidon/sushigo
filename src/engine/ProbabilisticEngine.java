@@ -20,11 +20,11 @@ import cards.Tempura;
 import cards.Wasabi;
 
 public class ProbabilisticEngine extends Engine {
-	double expectedTotalTempura = 0;
-	int playerNumber = 1, cardsInPlay = 1;
+	int playerNumber = 1, cardsInPlay = 1, round = 1;
 	HashMap<String, Double> totalMap = new HashMap<String, Double>();
 	HashMap<String, Integer> eatenMap = new HashMap<String, Integer>();
 	HashMap<String, Integer> handMap = new HashMap<String, Integer>();
+	HashMap<String, Integer> seenMap = new HashMap<String, Integer>();
 	HashMap<String, Double> nextHandOddsMap = new HashMap<String, Double>();
 	
 	List<Card> eaten;
@@ -38,18 +38,19 @@ public class ProbabilisticEngine extends Engine {
 	}
 	
 	private void initProbabilities() {
-		totalMap.put(Tempura.class.getSimpleName(),this.playerNumber * cardsInPlay * Constants.TEMPURA_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Chopsticks.class.getSimpleName(),this.playerNumber * cardsInPlay * Constants.CHOPSTICKS_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Dumpling.class.getSimpleName(),this.playerNumber * cardsInPlay * Constants.DUMPLING_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Pudding.class.getSimpleName(),this.playerNumber * cardsInPlay * Constants.PUDDING_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Sashimi.class.getSimpleName(),this.playerNumber * cardsInPlay * Constants.SASHIMI_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Wasabi.class.getSimpleName(),this.playerNumber * cardsInPlay * Constants.WASABI_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put("Maki1",this.playerNumber * cardsInPlay * Constants.MAKI_ROLL_1_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put("Maki2",this.playerNumber * cardsInPlay * Constants.MAKI_ROLL_2_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put("Maki3",this.playerNumber * cardsInPlay * Constants.MAKI_ROLL_3_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Nigiri.EGG,this.playerNumber * cardsInPlay * Constants.EGG_NIGIRI_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Nigiri.SALMON,this.playerNumber * cardsInPlay * Constants.SALMON_NIGIRI_COUNT/(double) Constants.TOTAL_CARDS);
-		totalMap.put(Nigiri.SQUID,this.playerNumber * cardsInPlay * Constants.SQUID_NIGIRI_COUNT/(double) Constants.TOTAL_CARDS);
+		double totalCards = (double) (Constants.TOTAL_CARDS - getSeenTotalCount());
+		totalMap.put(Tempura.class.getSimpleName(), this.playerNumber * cardsInPlay * (Constants.TEMPURA_COUNT - getSeenCount(Tempura.class.getSimpleName()) )/totalCards );
+		totalMap.put(Chopsticks.class.getSimpleName(), this.playerNumber * cardsInPlay *( Constants.CHOPSTICKS_COUNT - getSeenCount(Chopsticks.class.getSimpleName()) )/totalCards);
+		totalMap.put(Dumpling.class.getSimpleName(), this.playerNumber * cardsInPlay * (Constants.DUMPLING_COUNT - getSeenCount(Dumpling.class.getSimpleName()) )/totalCards);
+		totalMap.put(Pudding.class.getSimpleName(), this.playerNumber * cardsInPlay * (Constants.PUDDING_COUNT - getSeenCount(Pudding.class.getSimpleName()) ) /totalCards);
+		totalMap.put(Sashimi.class.getSimpleName(), this.playerNumber * cardsInPlay * (Constants.SASHIMI_COUNT - getSeenCount(Sashimi.class.getSimpleName()) )/totalCards);
+		totalMap.put(Wasabi.class.getSimpleName(), this.playerNumber * cardsInPlay * (Constants.WASABI_COUNT - getSeenCount(Wasabi.class.getSimpleName()) )/totalCards);
+		totalMap.put("Maki1", this.playerNumber * cardsInPlay * (Constants.MAKI_ROLL_1_COUNT - getSeenCount("Maki1") )/totalCards);
+		totalMap.put("Maki2", this.playerNumber * cardsInPlay * (Constants.MAKI_ROLL_2_COUNT - getSeenCount("Maki2") )/totalCards);
+		totalMap.put("Maki3", this.playerNumber * cardsInPlay * (Constants.MAKI_ROLL_3_COUNT - getSeenCount("Maki3") )/totalCards);
+		totalMap.put(Nigiri.EGG, this.playerNumber * cardsInPlay * (Constants.EGG_NIGIRI_COUNT - getSeenCount(Nigiri.EGG) )/totalCards);
+		totalMap.put(Nigiri.SALMON, this.playerNumber * cardsInPlay *(Constants.SALMON_NIGIRI_COUNT - getSeenCount(Nigiri.SALMON) )/totalCards);
+		totalMap.put(Nigiri.SQUID, this.playerNumber * cardsInPlay * (Constants.SQUID_NIGIRI_COUNT - getSeenCount(Nigiri.SQUID) )/totalCards);
 	}
 	
 	private void buildHandMap() {
@@ -60,7 +61,10 @@ public class ProbabilisticEngine extends Engine {
 		}
 	}
 	
+	
 	private void buildEatenMap() {
+		HashMap<String, Integer> lastTurnEaten = new HashMap<String, Integer>();
+		lastTurnEaten.putAll(eatenMap);
 		eatenMap.clear();
 		for(Card e : eaten) {
 			String itemName = e.name;
@@ -69,9 +73,25 @@ public class ProbabilisticEngine extends Engine {
 		}
 		for(Player opponent : opponents) {
 			for(Card e : opponent.eaten) {
-				String itemName = e.getClass().getSimpleName();
+				String itemName = e.name;
 				int count = eatenMap.containsKey(itemName) ? eatenMap.get(itemName) + 1 : 1;
 				eatenMap.put(itemName, count);
+			}
+		}
+		
+		//new round
+		if(eaten.isEmpty() && !lastTurnEaten.isEmpty()) {
+			round++;
+			if(round == 2) {
+				seenMap.putAll(lastTurnEaten);
+			} else if(round == 3) {
+				for (Map.Entry<String, Integer> entry : lastTurnEaten.entrySet()) { 
+					if(seenMap.containsKey(entry.getKey()))
+						seenMap.put(entry.getKey(), seenMap.get(entry.getKey()) + entry.getValue());
+					else
+						seenMap.put(entry.getKey(), entry.getValue());
+				}
+
 			}
 		}
 	}
@@ -101,6 +121,17 @@ public class ProbabilisticEngine extends Engine {
 		return nextHandOddsMap.containsKey(name) ? nextHandOddsMap.get(name) : 0.0;
 	}
 	
+	private Integer getSeenTotalCount() {
+		int total = 0;
+		for (Map.Entry<String, Integer> entry : seenMap.entrySet()) 
+			total += entry.getValue();
+		return total;
+	}
+	
+	private Integer getSeenCount(String name) {
+		return seenMap.containsKey(name) ? seenMap.get(name) : 0;
+	}
+	
 	@Override
 	public Card bestCardToEat(List<Card> hand) {
 		return null;
@@ -117,6 +148,7 @@ public class ProbabilisticEngine extends Engine {
 		this.hand = hand;
 		buildEatenMap();
 		buildHandMap();
+		initProbabilities();
 		buildOddsMap();
 		
 		//Map<String, Double> sortedBest = Helpers.sortByValue(nextHandOddsMap);

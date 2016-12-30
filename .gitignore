@@ -1,0 +1,6 @@
+log/*
+!.gitkeep
+.DS_Store
+.svn
+bin/
+*.mdb
