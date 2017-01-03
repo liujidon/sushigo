@@ -18,6 +18,7 @@ import cards.Tempura;
 import cards.Wasabi;
 import engine.Human;
 import engine.ProbabilisticEngine;
+import engine.RiskyBotEngine;
 
 public class Board {
 
@@ -84,6 +85,16 @@ public class Board {
 		probPlayer.name = probPlayer.engine.getClass().getSimpleName();
 		return probPlayer;
 	}
+	
+	public Player selectRiskyEnginePlayer(int playerNumber) {
+		if(playerNumber >= players.size())
+			return null;
+		Player riskPlayer = players.get(playerNumber);
+		riskPlayer.engine = new RiskyBotEngine();
+		riskPlayer.name = riskPlayer.engine.getClass().getSimpleName();
+		return riskPlayer;
+	}
+	
 	public void takeTurn() {
 		for(Player player : players)
 			player.makeMove();
