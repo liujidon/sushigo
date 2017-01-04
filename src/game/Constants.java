@@ -9,11 +9,11 @@ public class Constants {
 	public static final int MAKI_ROLL_2_COUNT = 12;
 	public static final int MAKI_ROLL_3_COUNT = 8;
 	
-	public static final int TEMPURA_COUNT = 14;
-	public static final int SASHIMI_COUNT = 14;
-	public static final int DUMPLING_COUNT = 14;
-	public static final int PUDDING_COUNT = 10;
-	public static final int WASABI_COUNT = 6;
+	public static final int TEMPURA_COUNT = 13;
+	public static final int SASHIMI_COUNT = 13;
+	public static final int DUMPLING_COUNT = 13;
+	public static final int PUDDING_COUNT = 15;
+	public static final int WASABI_COUNT = 4 ;
 	public static final int CHOPSTICKS_COUNT = 4;
 	
 	public static final int TOTAL_CARDS = 108;

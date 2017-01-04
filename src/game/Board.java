@@ -1,24 +1,12 @@
 package game;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
-import cards.Card;
-import cards.Chopsticks;
-import cards.Dumpling;
-import cards.Maki;
-import cards.Nigiri;
-import cards.Pudding;
-import cards.Sashimi;
-import cards.Tempura;
-import cards.Wasabi;
+import cards.*;
 import engine.Human;
 import engine.ProbabilisticEngine;
 import engine.RiskyBotEngine;
+import engine.SetEngine;
+
+import java.util.*;
 
 public class Board {
 
@@ -94,6 +82,16 @@ public class Board {
 		riskPlayer.name = riskPlayer.engine.getClass().getSimpleName();
 		return riskPlayer;
 	}
+
+	public Player selectSetEnginePlayer(int playerNumber) {
+		if(playerNumber >= players.size())
+			return null;
+		Player setPlayer = players.get(playerNumber);
+		setPlayer.engine = new SetEngine();
+		setPlayer.name = setPlayer.engine.getClass().getSimpleName();
+		return setPlayer;
+	}
+
 	
 	public void takeTurn() {
 		for(Player player : players)

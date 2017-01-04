@@ -1,17 +1,9 @@
 package game;
 
+import cards.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import cards.Card;
-import cards.Chopsticks;
-import cards.Dumpling;
-import cards.Maki;
-import cards.Nigiri;
-import cards.Pudding;
-import cards.Sashimi;
-import cards.Tempura;
-import cards.Wasabi;
 
 public class SushiGo {
 
@@ -29,45 +21,79 @@ public class SushiGo {
 		Board board = new Board(5, mode);
 		
 		board.selectHumanPlayer(0);
-		board.selectProbEnginePlayer(2);
-		
+		board.selectSetEnginePlayer(1);
+
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
+		board.takeTurn();
+		board.printPlayerHand();
 		board.computeScores();
 		board.printPlayerEaten();
 		board.newRound();
-		
+
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.computeScores();
 		board.printPlayerEaten();
 		board.newRound();
-		
+
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.takeTurn();
+		board.printPlayerHand();
 		board.computeScores();
 		board.printPlayerEaten();
 
