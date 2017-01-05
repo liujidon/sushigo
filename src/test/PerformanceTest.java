@@ -39,7 +39,10 @@ public class PerformanceTest {
 			Board board = new Board(5, mode);
 			
 			Player p1 = board.selectProbEnginePlayer(0);
-			Player p2 = board.selectRiskyEnginePlayer(2);
+			Player p2 = board.selectSetEnginePlayer(1);
+			Player p3 = board.selectRiskyEnginePlayer(2);
+			Player p4 = board.selectRiskyEnginePlayer(3);
+			Player p5 = board.selectRiskyEnginePlayer(4);
 			//Player p2 = p1;
 			
 			board.takeTurn();
