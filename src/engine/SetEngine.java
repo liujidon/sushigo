@@ -66,18 +66,15 @@ public class SetEngine extends Engine {
 
         if (hand.isEmpty()) {
             return null;
-        }
-
-        else if (usedWasabi == false) {
+        } else if (usedWasabi == false) {
             return bestCardEatenHelper(hand, set);
 
 
-        }
-        else if (usedChopstick == false) {
+        } else if (usedChopstick == false) {
             usedChopstick = true;
             return bestCardEatenHelper(hand, setWithChopstick);
 
-        }else if (hand.size() >= 4 && hand.size() <= 10) {
+        } else if (hand.size() >= 4 && hand.size() <= 10) {
             return bestCardEatenHelper(hand, setWithoutWasabi);
         } else if (hand.size() == 1) {
             usedChopstick = true;
@@ -99,102 +96,31 @@ public class SetEngine extends Engine {
         return bestCardToEat(hand);
     }
 
-//    public Card withoutWasabiChoice(List<Card> hand) {
-//        int cardIndex = 0;
-//        outer:
-//        for (int i = 0; i < setWithoutWasabi.size(); i++) {
-//            for (int j = 0; j < hand.size(); j++) {
-//                if (setWithoutWasabi.get(i).name.equals(hand.get(j).name)) {
-//                    cardIndex = j;
-//                    break outer;
-//                }
-//            }
-//        }
-//
-//        if (hand.get(cardIndex) instanceof Wasabi) {
-//            usedWasabi = false;
-//        }
-//        if (hand.get(cardIndex) instanceof Chopsticks) {
-//            usedChopstick = false;
-//        }
-//
-//
-//        return hand.get(cardIndex);
-//    }
-//
-//
-//    public Card findNigiri(List<Card> hand) {
-//        int cardIndex = 0;
-//        outer:
-//        for (int i = 0; i < set.size(); i++) {
-//            for (int j = 0; j < hand.size(); j++) {
-//                if (set.get(i).name.equals(hand.get(j).name)) {
-//                    cardIndex = j;
-//                    break outer;
-//                }
-//            }
-//        }
-//        if (hand.get(cardIndex) instanceof Nigiri) {
-//            usedWasabi = true;
-//        }
-//
-//        if (hand.get(cardIndex) instanceof Chopsticks) {
-//            usedChopstick = false;
-//        }
-//        return hand.get(cardIndex);
-//    }
+    public Card bestCardEatenHelper(List<Card> hand, List<Card> sets) {
 
-//    public Card useChopstickChoice(List<Card> hand) {
-//        int cardIndex = 0;
-//        outer:
-//        for (int i = 0; i < setWithChopstick.size(); i++) {
-//            for (int j = 0; j < hand.size(); j++) {
-//                if (setWithChopstick.get(i).name.equals(hand.get(j).name)) {
-//                    cardIndex = j;
-//                    break outer;
-//                }
-//            }
-//        }
-//        usedChopstick = true;
-//
-//        if (hand.get(cardIndex) instanceof Nigiri) {
-//            usedWasabi = true;
-//        }
-//        if (hand.get(cardIndex) instanceof Wasabi) {
-//            usedWasabi = false;
-//        }
-//        if (hand.get(cardIndex) instanceof Chopsticks) {
-//            usedChopstick = false;
-//        }
-//            return hand.get(cardIndex);
-//        }
-
-
-        public Card bestCardEatenHelper(List<Card> hand, List<Card> sets) {
-
-            int cardIndex = 0;
-            outer:
-            for (int i = 0; i < sets.size(); i++) {
-                for (int j = 0; j < hand.size(); j++) {
-                    if (sets.get(i).name.equals(hand.get(j).name)) {
-                        cardIndex = j;
-                        break outer;
-                    }
+        int cardIndex = 0;
+        outer:
+        for (int i = 0; i < sets.size(); i++) {
+            for (int j = 0; j < hand.size(); j++) {
+                if (sets.get(i).name.equals(hand.get(j).name)) {
+                    cardIndex = j;
+                    break outer;
                 }
-
-            }
-            if (hand.get(cardIndex) instanceof Nigiri && usedWasabi == false) {
-                usedWasabi = true;
-            }
-            if (hand.get(cardIndex) instanceof Wasabi) {
-                usedWasabi = false;
-            }
-            if (hand.get(cardIndex) instanceof Chopsticks) {
-                usedChopstick = false;
             }
 
-            return hand.get(cardIndex);
+        }
+        if (hand.get(cardIndex) instanceof Nigiri && usedWasabi == false) {
+            usedWasabi = true;
+        }
+        if (hand.get(cardIndex) instanceof Wasabi) {
+            usedWasabi = false;
+        }
+        if (hand.get(cardIndex) instanceof Chopsticks) {
+            usedChopstick = false;
         }
 
+        return hand.get(cardIndex);
     }
+
+}
 
