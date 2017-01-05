@@ -20,8 +20,8 @@ public class SushiGo {
 		
 		Board board = new Board(5, mode);
 		
-		board.selectHumanPlayer(0);
 		board.selectSetEnginePlayer(1);
+		board.selectProbEnginePlayer(1);
 
 		board.printPlayerHand();
 		board.takeTurn();
