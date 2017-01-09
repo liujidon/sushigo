@@ -233,18 +233,100 @@ public class ProbabilisticEngine extends Engine {
                         minOpponent = currCount;
                     }
                 }
-                if (count >= maxOpponent) {
-                    h.expValue = 0.0;
-                } else if (count == maxOpponent - 1 | count == minOpponent | count == minOpponent - 1 ) {
+                if (count == minOpponent && count == maxOpponent - 1) {
                     h.expValue = Pudding.FIRST_PLACE_SCORE;
-                } else if(count < minOpponent){
-                    h.expValue = getNextHandOdds(h.name) * 6/ (minOpponent - count);
+                } else if (count < minOpponent) {
+                    h.expValue = getNextHandOdds(h.name) * 6 / (minOpponent - count);
 
+                } else if (count < maxOpponent) {
+                    h.expValue = getNextHandOdds(h.name) * 6 / (maxOpponent - count);
+
+                } else {
+                    h.expValue = 0.0;
                 }
 
 
             } else if (h instanceof Maki) {
                 //TODO, check other players
+                int count = 0;
+                int countCards = 0;
+                int secondPlaceOpponent = 0;
+                int firstPlaceOpponent = 0;
+
+                for (Card c : eaten) {
+                    if (c instanceof Maki) {
+                        countCards++;
+                        count += ((Maki) c).weight;
+
+                    }
+                }
+                for (Player opponent : opponents) {
+                    int currCount = 0;
+                    for (Card e : opponent.eaten) {
+                        if (e instanceof Maki) {
+                            currCount += ((Maki) e).weight;
+                        }
+                    }
+                    if (currCount > firstPlaceOpponent) {
+                        firstPlaceOpponent = currCount;
+                    }
+                    if (currCount < firstPlaceOpponent && currCount > secondPlaceOpponent) {
+                        secondPlaceOpponent = currCount;
+                    }
+                }
+                int differenceFirst = count - firstPlaceOpponent;
+                int differenceSecond = count - secondPlaceOpponent;
+                if (differenceFirst == -1) {
+                    h.expValue = Maki.FIRST_PLACE_SCORE;
+                } else if (differenceFirst == -2) {
+                    if (((Maki) h).weight >= 2) {
+                        h.expValue = Maki.FIRST_PLACE_SCORE;
+                    } else {
+                        double odds = (getNextHandOdds("Maki2") + getNextHandOdds("Maki3")) * Maki.FIRST_PLACE_SCORE
+                                / 4;
+                        h.expValue = odds > 3.0 ? 3.0 : odds;
+                    }
+
+                } else if (differenceFirst == -3) {
+                    if (((Maki) h).weight == 3) {
+                        h.expValue = Maki.FIRST_PLACE_SCORE;
+                    } else if (((Maki) h).weight == 2) {
+                        double odds = (getNextHandOdds("Maki1") + getNextHandOdds("Maki2") + getNextHandOdds("Maki3"))
+                                * Maki.FIRST_PLACE_SCORE / 6;
+                        h.expValue = odds > 3.0 ? 3.0 : odds;
+                    } else {
+                        double odds = (getNextHandOdds("Maki2") + getNextHandOdds("Maki3")) * Maki.FIRST_PLACE_SCORE
+                                / 4;
+                        h.expValue = odds > 3.0 ? 3.0 : odds;
+                    }
+                } else if (differenceSecond == -1) {
+                    h.expValue = Maki.SECOND_PLACE_SCORE;
+                } else if (differenceSecond == -2) {
+                    if (((Maki) h).weight >= 2) {
+                        h.expValue = Maki.SECOND_PLACE_SCORE;
+                    } else {
+                        double odds = (getNextHandOdds("Maki2") + getNextHandOdds("Maki3")) * Maki.SECOND_PLACE_SCORE
+                                / 4;
+                        h.expValue = odds > 3.0 ? 3.0 : odds;
+                    }
+
+                } else if (differenceSecond == -3) {
+                    if (((Maki) h).weight == 3) {
+                        h.expValue = Maki.SECOND_PLACE_SCORE;
+                    } else if (((Maki) h).weight == 2) {
+                        double odds = (getNextHandOdds("Maki1") + getNextHandOdds("Maki2") + getNextHandOdds("Maki3"))
+                                * Maki.SECOND_PLACE_SCORE / 6;
+                        h.expValue = odds > 3.0 ? 3.0 : odds;
+                    } else {
+                        double odds = (getNextHandOdds("Maki2") + getNextHandOdds("Maki3")) * Maki.SECOND_PLACE_SCORE
+                                / 4;
+                        h.expValue = odds > 3.0 ? 3.0 : odds;
+                    }
+                } else {
+                    h.expValue = 0.0;
+                }
+
+
             } else if (h instanceof Nigiri) {
                 boolean unusedWasabi = false;
                 for (Card c : eaten)
